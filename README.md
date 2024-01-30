@@ -5,7 +5,8 @@ Can be considered as a light Keel alternative.
 The main use case is when your Kubernetes cluster is running applications/services using major or minor image
 versions (floating tags) and you want the most updated.
 
-> [!WARNING] Triggering that effect can affect resource availability if:
+> [!WARNING]
+> Triggering that effect can affect resource availability if:
 > * There is only one replica of the resource,
 > * The image version is too open like `latest`.
 
