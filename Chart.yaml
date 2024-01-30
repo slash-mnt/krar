@@ -1,6 +1,6 @@
 apiVersion: v2
 name: k8s-resources-auto-rollouter
-description: A Helm chart for Kubernetes
+description: A Helm chart for Kubernetes for refreshing images using floating tags on selected resources.
 
 # A chart can be either an 'application' or a 'library' chart.
 #

@@ -1,5 +1,5 @@
 # Kubernetes Resources Auto Rollouter
-krar is a simple chart intended to refresh images using floating tags on selected resources.
+krar is a simple chart for refreshing images using floating tags on selected resources.
 Can be considered as a light Keel alternative.
 
 The main use case is when your Kubernetes cluster is running applications/services using major or minor image
