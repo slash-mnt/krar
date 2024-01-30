@@ -1,4 +1,4 @@
-# Kubernetes Resources Auto Rollouter
+# Kubernetes Resources Auto Rollouter aka krar
 krar is a simple chart for refreshing images using floating tags on selected resources.
 Can be considered as a light Keel alternative.
 
