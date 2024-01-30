@@ -1,0 +1,52 @@
+image:
+  repository: alpine
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 3.19.1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+resources:
+  requests:
+    memory: 10Mi
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+jobs:
+  - name: once-a-month
+    schedule: 0 0 1 * *
+    podLabels: []
+    filter:
+      label:
+        domain: slash-mnt.com
+        name: enable-autorollout
+        triggerValue: "" # Overrides the job name.
+      resources:
+        - deployments
+        - statefulsets
+        - daemonsets
+      namespaces:
+        all: true
+        specific: []
+
+cluster:
+  kubernetes:
+    version: 1.17.5

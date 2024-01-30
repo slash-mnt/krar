@@ -1,0 +1,92 @@
+{{- range $i, $job := $.Values.jobs }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "k8s-resources-auto-rollouter.fullname" $ }}-{{ $job.name }}
+  labels:
+    {{- include "k8s-resources-auto-rollouter.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ $job.schedule }}
+  jobTemplate:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        slash-mnt.com/name: {{ $job.name }}
+        {{- with $.Values.podLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with $job.podLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      template:
+        metadata:
+          labels:
+            slash-mnt.com/name: {{ $job.name }}
+            {{- with $.Values.podLabels }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with $job.podLabels }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+        spec:
+          {{- with $.Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "k8s-resources-auto-rollouter.serviceAccountName" $ }}
+          restartPolicy: "Never"
+          securityContext:
+            {{- toYaml $.Values.podSecurityContext | nindent 12 }}
+          containers:
+            - name: {{ $.Chart.Name }}
+              image: {{ $.Values.image.repository }}:{{ $.Values.image.tag }}
+              imagePullPolicy: {{ $.Values.image.pullPolicy }}
+              securityContext:
+                {{- toYaml $.Values.securityContext | nindent 16 }}
+              command:
+                - sh
+              args:
+                - -c
+                - |
+                  apk add --update --no-cache curl
+
+                  curl -LO https://storage.googleapis.com/kubernetes-release/release/v{{ $.Values.cluster.kubernetes.version }}/bin/linux/amd64/kubectl
+                  chmod u+x kubectl
+                  mv kubectl /bin/kubectl
+
+                  {{ if $job.filter.label.triggerValue }}
+                  FILTER="{{ $job.filter.label.domain }}/{{ $job.filter.label.name }}={{ $job.filter.label.triggerValue }}"
+                  {{ else }}
+                  FILTER="{{ $job.filter.label.domain }}/{{ $job.filter.label.name }}={{ $job.name }}"
+                  {{ end }}
+
+                  # Retrieve resources to rollout.
+                  {{ if $job.filter.namespaces.all }}
+                  echo "Retrieving {{ $job.filter.resources }} on all namespaces"
+                  kubectl get {{ join "," $job.filter.resources }} --all-namespaces --selector ${FILTER} --output yaml > resources.yaml
+                  {{ else }}
+                  {{- range $namespace := $job.filter.namespaces.specific }}
+                  echo "Retrieving {{ $job.filter.resources }} on namespace {{ $namespace }}"
+                  kubectl get {{ join "," $job.filter.resources }} --namespace={{ $namespace }} --selector ${FILTER} --output yaml >> resources.yaml
+                  {{- end }}
+                  {{ end }}
+                  # Rollout resources.
+                  kubectl rollout restart --filename ./resources.yaml
+              resources: {{ $.Values.resources }}
+              {{- with $.Values.nodeSelector }}
+              nodeSelector:
+                {{- toYaml . | nindent 12 }}
+              {{- end }}
+              {{- with $.Values.affinity }}
+              affinity:
+                {{- toYaml . | nindent 12 }}
+              {{- end }}
+              {{- with $.Values.tolerations }}
+              tolerations:
+                {{- toYaml . | nindent 12 }}
+              {{- end }}
+{{- end }}
