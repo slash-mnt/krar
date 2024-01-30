@@ -2,9 +2,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "k8s-resources-auto-rollouter.fullname" $ }}-{{ $job.name }}
+  name: {{ include "krar.fullname" $ }}-{{ $job.name }}
   labels:
-    {{- include "k8s-resources-auto-rollouter.labels" $ | nindent 4 }}
+    {{- include "krar.labels" $ | nindent 4 }}
 spec:
   schedule: {{ $job.schedule }}
   jobTemplate:
@@ -37,7 +37,7 @@ spec:
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          serviceAccountName: {{ include "k8s-resources-auto-rollouter.serviceAccountName" $ }}
+          serviceAccountName: {{ include "krar.serviceAccountName" $ }}
           restartPolicy: "Never"
           securityContext:
             {{- toYaml $.Values.podSecurityContext | nindent 12 }}
@@ -59,7 +59,7 @@ spec:
                   mv kubectl /bin/kubectl
 
                   {{ if $job.filter.label.triggerValue }}
-                  FILTER="{{ $job.filter.label.domain }}/{{ $job.filter.label.name }}={{ $job.filter.label.triggerValue }}"
+                  FILTER="{{ $job.filter.label.domain }}/{{ $job.filter.label.name }}={{ $job.filter.label.policyName }}"
                   {{ else }}
                   FILTER="{{ $job.filter.label.domain }}/{{ $job.filter.label.name }}={{ $job.name }}"
                   {{ end }}

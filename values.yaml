@@ -30,15 +30,19 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+roleClusterAnnotations: {}
+roleClusterBindingAnnotations: {}
+serviceAccountAnnotations: {}
+
 jobs:
   - name: once-a-month
     schedule: 0 0 1 * *
     podLabels: []
     filter:
       label:
-        domain: slash-mnt.com
-        name: enable-autorollout
-        triggerValue: "" # Overrides the job name.
+        domain: krar.slash-mnt.com
+        name: rollout-policy
+        policyName: "" # Overrides the job name.
       resources:
         - deployments
         - statefulsets

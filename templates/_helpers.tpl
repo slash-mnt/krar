@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "k8s-resources-auto-rollouter.name" -}}
+{{- define "krar.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "k8s-resources-auto-rollouter.fullname" -}}
+{{- define "krar.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "k8s-resources-auto-rollouter.chart" -}}
+{{- define "krar.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "k8s-resources-auto-rollouter.labels" -}}
-helm.sh/chart: {{ include "k8s-resources-auto-rollouter.chart" . }}
-{{ include "k8s-resources-auto-rollouter.selectorLabels" . }}
+{{- define "krar.labels" -}}
+helm.sh/chart: {{ include "krar.chart" . }}
+{{ include "krar.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,21 +45,21 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "k8s-resources-auto-rollouter.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "k8s-resources-auto-rollouter.name" . }}
+{{- define "krar.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "krar.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "k8s-resources-auto-rollouter.serviceAccountName" -}}
-{{- default (include "k8s-resources-auto-rollouter.fullname" .) .Values.serviceAccountName }}
+{{- define "krar.serviceAccountName" -}}
+{{- default (include "krar.fullname" .) .Values.serviceAccountName }}
 {{- end }}
 
 {{/*
 Create the name of the cluster role to use
 */}}
-{{- define "k8s-resources-auto-rollouter.clusterRoleName" -}}
-{{- default (include "k8s-resources-auto-rollouter.fullname" .) .Values.clusterRoleName }}
+{{- define "krar.clusterRoleName" -}}
+{{- default (include "krar.fullname" .) .Values.clusterRoleName }}
 {{- end }}

@@ -1,9 +1,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "k8s-resources-auto-rollouter.clusterRoleName" . }}
+  name: {{ include "krar.clusterRoleName" . }}
   labels:
-    {{- include "k8s-resources-auto-rollouter.labels" . | nindent 4 }}
+    {{- include "krar.labels" . | nindent 4 }}
+  {{- with .Values.clusterRoleAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 rules:
   - apiGroups: ["", "apps"]
     resources: ["deployments", "daemonsets", "statefulsets"]
