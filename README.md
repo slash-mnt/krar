@@ -6,7 +6,7 @@ krar is a simple chart for refreshing images using floating tags on selected res
 Can be considered as a lightweight Keel alternative.
 
 The main use case is when your Kubernetes cluster is running applications/services using major or minor image
-versions (floating tags) you want the most updated.
+versions (floating tags) you want up to date.
 
 > [!WARNING]
 > Triggering that restart affects resource availability if:
